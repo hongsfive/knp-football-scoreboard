@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PROK 전국목회자 축구대회 읽기 전용</title>
+  <title>PROK 전국목회자 축구대회 점수판</title>
   <style>
     :root {
       --grass:#0f5f3a; --grass-2:#0b4d30; --line:rgba(255,255,255,.28); --lime:#b7f05a;
@@ -35,7 +35,7 @@
 <body class="readonly-mode">
   <div class="topbar">
     <div class="topline">
-      <div class="brand"><div class="ball"></div><div><h1>PROK 전국목회자 축구대회 점수판</h1><div class="subtitle">한국기독교장로회 · 메인 대시보드 · 팀별 점수판 · A/B/C조별 입력</div></div></div>
+      <div class="brand"><div class="ball"></div><div><h1>PROK 전국목회자 축구대회 점수판</h1><div class="subtitle">한국기독교장로회 · 조별 순위 · 경기 결과 · 팀별 점수판</div></div></div>
     </div>
     <nav class="tabs" aria-label="화면 전환">
       <button class="tab active" data-view="readonly">순위표</button>
@@ -65,7 +65,7 @@
 
       <section id="readonly" class="view">
         <article class="pitch-panel">
-          <div class="readonly-note"><div><span class="badge final">읽기 전용</span> <strong>관람/공유용 화면</strong><div class="hint">입력 버튼 없이 메인 대시보드와 팀별 점수판만 모바일에 맞게 보여줍니다.</div></div><button class="btn" id="readonlyRefreshBtn" type="button">온라인 새로고침</button></div>
+          <div class="readonly-note"><div><strong>실시간 경기 현황</strong><div class="hint">조별 순위와 경기 결과를 최신 기록 기준으로 확인합니다.</div></div><button class="btn" id="readonlyRefreshBtn" type="button">새로고침</button></div>
           <div class="score-strip">
             <div class="metric"><b id="metricTeamsRead">0</b><span>등록 팀</span></div><div class="metric"><b id="metricMatchesRead">0</b><span>전체 경기</span></div><div class="metric"><b id="metricDoneRead">0</b><span>입력 완료</span></div>
           </div>
@@ -78,7 +78,7 @@
 
       <section id="matchresults" class="view">
         <article class="pitch-panel">
-          <div class="readonly-note"><div><span class="badge final">읽기 전용</span> <strong>조별 개별경기 결과</strong><div class="hint">A/B/C조의 각 경기 점수와 경고·퇴장을 확인합니다.</div></div><button class="btn" id="matchResultsRefreshBtn" type="button">온라인 새로고침</button></div>
+          <div class="readonly-note"><div><strong>조별 경기 결과</strong><div class="hint">각 경기의 점수와 경고·퇴장 기록을 확인합니다.</div></div><button class="btn" id="matchResultsRefreshBtn" type="button">새로고침</button></div>
           <div class="score-strip"><div class="metric"><b id="metricTeamsResult">0</b><span>등록 팀</span></div><div class="metric"><b id="metricMatchesResult">0</b><span>전체 경기</span></div><div class="metric"><b id="metricDoneResult">0</b><span>입력 완료</span></div></div>
         </article>
         <div class="grid-3">
@@ -113,12 +113,11 @@
             <p class="hint">점수/팀/경기 기록은 이제 브라우저에 저장하지 않고 GitHub 파일 <code>data/scoreboard.json</code>만 기준으로 사용합니다. 화면을 열면 온라인 기록을 자동으로 불러오고, 수정 후에는 <b>온라인 덮어쓰기 저장</b>을 눌러야 다른 사람에게 반영됩니다. 토큰만 현재 브라우저에 저장할 수 있습니다.</p>
           </div>
           <div class="toolbar">
-            <button class="btn primary" id="onlineSaveBtn">온라인 덮어쓰기 저장</button><button class="btn" id="onlineLoadBtn">온라인 새로고침</button><button class="btn" id="tokenSaveBtn">토큰 저장</button><button class="btn" id="exportBtn">JSON 백업</button><button class="btn" id="csvBtn">CSV 복사</button><button class="btn warn" id="printBtn">인쇄/PDF</button><button class="btn danger" id="resetBtn">초기화</button><input id="importFile" type="file" accept="application/json" hidden><button class="btn" id="importBtn">JSON 복구</button>
+            <button class="btn primary" id="onlineSaveBtn">온라인 덮어쓰기 저장</button><button class="btn" id="onlineLoadBtn">새로고침</button><button class="btn" id="tokenSaveBtn">토큰 저장</button><button class="btn" id="exportBtn">JSON 백업</button><button class="btn" id="csvBtn">CSV 복사</button><button class="btn warn" id="printBtn">인쇄/PDF</button><button class="btn danger" id="resetBtn">초기화</button><input id="importFile" type="file" accept="application/json" hidden><button class="btn" id="importBtn">JSON 복구</button>
           </div>
         </article>
       </section>
     </main>
-    <p class="footer-note">운영 권장: 화면을 열면 온라인 기록을 불러오고, 수정 후에는 반드시 온라인 덮어쓰기 저장을 눌러야 다른 사람 화면에도 반영됩니다. 동시에 수정하면 마지막 저장이 기준입니다.</p>
   </div>
   <div id="toast" class="toast"></div>
 <script>
@@ -183,7 +182,7 @@ function rememberToken(){const t=document.getElementById('githubToken').value.tr
 function b64(str){const bytes=new TextEncoder().encode(str);let bin='';bytes.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
 function unb64(str){const bin=atob(str.replace(/\n/g,''));return new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)))}
 async function onlineFetch(method='GET',body=null,auth=false){const headers={'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};const t=token();if(auth&&t)headers.Authorization=`Bearer ${t}`;if(body){headers['Content-Type']='application/json'}const url=`https://api.github.com/repos/${ONLINE_FILE.owner}/${ONLINE_FILE.repo}/contents/${ONLINE_FILE.path}?ref=${ONLINE_FILE.branch}`;return fetch(url,{method,headers,body:body?JSON.stringify(body):null})}
-async function loadOnline(silent=false){try{const res=await onlineFetch('GET',null,Boolean(token()));if(!res.ok)throw new Error(`GitHub ${res.status}`);const data=await res.json();state=JSON.parse(unb64(data.content));ensureFixtures();render();if(!silent)toast('온라인 기록을 새로고침했습니다')}catch(e){if(silent)toast('온라인 기록을 불러오지 못해 빈 화면으로 시작합니다');else alert(`온라인 새로고침 실패: ${e.message}`)}}
+async function loadOnline(silent=false){try{const res=await onlineFetch('GET',null,Boolean(token()));if(!res.ok)throw new Error(`GitHub ${res.status}`);const data=await res.json();state=JSON.parse(unb64(data.content));ensureFixtures();render();if(!silent)toast('새로고침했습니다')}catch(e){if(silent)toast('온라인 기록을 불러오지 못해 빈 화면으로 시작합니다');else alert(`새로고침 실패: ${e.message}`)}}
 async function saveOnline(){try{const t=token();if(!t)return alert('온라인 저장용 GitHub 토큰을 먼저 입력/저장하세요.');touchState();let sha=null;const get=await onlineFetch('GET',null,true);if(get.ok){sha=(await get.json()).sha}else if(get.status!==404){throw new Error(`현재 파일 확인 실패 ${get.status}`)}const body={message:`Update scoreboard ${new Date().toISOString()}`,content:b64(JSON.stringify(state,null,2)),branch:ONLINE_FILE.branch};if(sha)body.sha=sha;const putUrl=`https://api.github.com/repos/${ONLINE_FILE.owner}/${ONLINE_FILE.repo}/contents/${ONLINE_FILE.path}`;const res=await fetch(putUrl,{method:'PUT',headers:{'Accept':'application/vnd.github+json','Content-Type':'application/json','Authorization':`Bearer ${t}`,'X-GitHub-Api-Version':'2022-11-28'},body:JSON.stringify(body)});if(!res.ok)throw new Error(`GitHub ${res.status}`);toast('현재 기록으로 온라인 파일을 덮어썼습니다')}catch(e){alert(`온라인 저장 실패: ${e.message}`)}}
 function focusNextField(current){const fields=[...document.querySelectorAll('input[data-match][data-field], input[data-team-name], textarea[data-team-note]')].filter(el=>el.offsetParent!==null&&!el.disabled);const i=fields.indexOf(current);if(i>=0&&fields[i+1]){fields[i+1].focus();if(fields[i+1].select)fields[i+1].select();return true}return false}
 document.addEventListener('input',e=>{const tn=e.target.dataset.teamName,mf=e.target.dataset.field,mid=e.target.dataset.match,note=e.target.dataset.teamNote;if(tn){const t=teamObj(tn);if(t)t.name=e.target.value}if(mid&&mf)updateMatch(mid,mf,e.target.value);if(note){const t=teamObj(note);if(t)t.note=e.target.value}touchState()});
@@ -191,9 +190,13 @@ document.addEventListener('focusin',e=>{if(e.target.matches('input[type="number"
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('input[data-match][data-field], input[data-team-name]')){if(focusNextField(e.target))e.preventDefault()}});
 document.addEventListener('change',e=>{if(e.target.dataset.teamName||e.target.dataset.field||e.target.dataset.teamNote)render()});
 document.addEventListener('click',e=>{const view=e.target.dataset.view,inputGroup=e.target.dataset.inputGroup;if(view){showView(view)}if(inputGroup){document.querySelectorAll('.input-tab,.input-view').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');document.getElementById(`input-${inputGroup}`).classList.add('active')}});
-function showView(view){document.querySelectorAll('.tab,.view').forEach(x=>x.classList.remove('active'));document.querySelector(`[data-view="${view}"]`)?.classList.add('active');document.getElementById(view)?.classList.add('active');render()}
+function showView(view){document.querySelectorAll('.tab,.view').forEach(x=>x.classList.remove('active'));document.querySelector(`[data-view="${view}"]`)?.classList.add('active');document.getElementById(view)?.classList.add('active');render();if(view==='readonly'||view==='matchresults')autoRefreshOnline()}
 document.getElementById('githubToken').value=localStorage.getItem(TOKEN_KEY)||'';clearLocalScoreCache();document.getElementById('onlineSaveBtn').onclick=saveOnline;document.getElementById('onlineLoadBtn').onclick=()=>loadOnline(false);document.getElementById('readonlyRefreshBtn').onclick=()=>loadOnline(false);document.getElementById('matchResultsRefreshBtn').onclick=()=>loadOnline(false);document.getElementById('tokenSaveBtn').onclick=rememberToken;document.getElementById('exportBtn').onclick=exportJson;document.getElementById('csvBtn').onclick=copyCsv;document.getElementById('printBtn').onclick=()=>window.print();document.getElementById('resetBtn').onclick=()=>{if(confirm('현재 화면의 팀명/경기 결과를 초기화할까요? 온라인 파일은 온라인 덮어쓰기 저장을 누르기 전까지 바뀌지 않습니다.')){state=loadState();render();toast('현재 화면만 초기화했습니다')}};document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();document.getElementById('importFile').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{state=JSON.parse(await file.text());ensureFixtures();touchState();render();toast('JSON을 현재 화면에 불러왔습니다. 온라인 반영은 덮어쓰기 저장을 누르세요.')}catch{alert('JSON 파일을 읽지 못했습니다.')}};
-render();document.body.classList.add('readonly-mode');showView('readonly');loadOnline(true);
+let lastAutoLoadAt=0;
+function autoRefreshOnline(){const now=Date.now();if(document.visibilityState==='visible'&&now-lastAutoLoadAt>15000){lastAutoLoadAt=now;loadOnline(true)}}
+window.addEventListener('focus',autoRefreshOnline);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoRefreshOnline()});
+render();document.body.classList.add('readonly-mode');showView('readonly');lastAutoLoadAt=Date.now();loadOnline(true);
 </script>
 </body>
 </html>
