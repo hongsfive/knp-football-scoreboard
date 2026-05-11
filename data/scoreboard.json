@@ -271,8 +271,8 @@
         "time": "11일 16:20",
         "home": "B2",
         "away": "B5",
-        "homeScore": "",
-        "awayScore": "",
+        "homeScore": "2",
+        "awayScore": "0",
         "homeYellow": 0,
         "awayYellow": 0,
         "homeRed": 0,
@@ -393,8 +393,8 @@
         "time": "11일 16:20",
         "home": "C2",
         "away": "C5",
-        "homeScore": "",
-        "awayScore": "",
+        "homeScore": "1",
+        "awayScore": "2",
         "homeYellow": 0,
         "awayYellow": 0,
         "homeRed": 0,
@@ -450,5 +450,5 @@
       }
     ]
   },
-  "updatedAt": "2026-05-11T08:22:49.344Z"
+  "updatedAt": "2026-05-11T08:23:54.155Z"
 }
