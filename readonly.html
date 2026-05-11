@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PROK 전국목회자 축구대회 점수판</title>
+  <title>PROK 전국목회자 축구대회 읽기 전용</title>
   <style>
     :root {
       --grass:#0f5f3a; --grass-2:#0b4d30; --line:rgba(255,255,255,.28); --lime:#b7f05a;
@@ -32,16 +32,13 @@
     @media print{body{background:white}.topbar,.toolbar,.input-tabs,.footer-note,.btn{display:none!important}.view{display:block!important}.panel,.pitch-panel{box-shadow:none;break-inside:avoid}}
   </style>
 </head>
-<body>
+<body class="readonly-mode">
   <div class="topbar">
     <div class="topline">
       <div class="brand"><div class="ball"></div><div><h1>PROK 전국목회자 축구대회 점수판</h1><div class="subtitle">한국기독교장로회 · 메인 대시보드 · 팀별 점수판 · A/B/C조별 입력</div></div></div>
     </div>
     <nav class="tabs" aria-label="화면 전환">
-      <button class="tab active" data-view="dashboard">메인 대시보드</button>
-      <button class="tab" data-view="teamboard">팀별 점수판</button>
-      <button class="tab" data-view="inputs">조별 입력화면</button>
-      <button class="tab" data-view="settings">팀명/규칙</button>
+      <button class="tab active" data-view="readonly">읽기 전용</button>
     </nav>
   </div>
   <div class="shell">
@@ -180,7 +177,7 @@ document.addEventListener('change',e=>{if(e.target.dataset.teamName||e.target.da
 document.addEventListener('click',e=>{const view=e.target.dataset.view,inputGroup=e.target.dataset.inputGroup;if(view){showView(view)}if(inputGroup){document.querySelectorAll('.input-tab,.input-view').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');document.getElementById(`input-${inputGroup}`).classList.add('active')}});
 function showView(view){document.querySelectorAll('.tab,.view').forEach(x=>x.classList.remove('active'));document.querySelector(`[data-view="${view}"]`)?.classList.add('active');document.getElementById(view)?.classList.add('active');render()}
 document.getElementById('githubToken').value=localStorage.getItem(TOKEN_KEY)||'';clearLocalScoreCache();document.getElementById('onlineSaveBtn').onclick=saveOnline;document.getElementById('onlineLoadBtn').onclick=()=>loadOnline(false);document.getElementById('readonlyRefreshBtn').onclick=()=>loadOnline(false);document.getElementById('tokenSaveBtn').onclick=rememberToken;document.getElementById('exportBtn').onclick=exportJson;document.getElementById('csvBtn').onclick=copyCsv;document.getElementById('printBtn').onclick=()=>window.print();document.getElementById('resetBtn').onclick=()=>{if(confirm('현재 화면의 팀명/경기 결과를 초기화할까요? 온라인 파일은 온라인 덮어쓰기 저장을 누르기 전까지 바뀌지 않습니다.')){state=loadState();render();toast('현재 화면만 초기화했습니다')}};document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();document.getElementById('importFile').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{state=JSON.parse(await file.text());ensureFixtures();touchState();render();toast('JSON을 현재 화면에 불러왔습니다. 온라인 반영은 덮어쓰기 저장을 누르세요.')}catch{alert('JSON 파일을 읽지 못했습니다.')}};
-render();const readonlyUrl=new URLSearchParams(location.search).get('view')==='readonly'||location.hash==='#readonly';if(readonlyUrl){document.body.classList.add('readonly-mode');showView('readonly')}loadOnline(true);
+render();document.body.classList.add('readonly-mode');showView('readonly');loadOnline(true);
 </script>
 </body>
 </html>
