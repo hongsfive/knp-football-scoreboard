@@ -78,22 +78,29 @@
         <div class="grid-3">
           <article class="panel"><div class="section-head"><div><h2>A조 팀명</h2><div class="hint">이미지 일정 기준</div></div></div><div id="teams-A" class="team-list"></div></article>
           <article class="panel"><div class="section-head"><div><h2>B조 팀명</h2><div class="hint">이미지 일정 기준</div></div></div><div id="teams-B" class="team-list"></div></article>
-          <article class="panel"><div class="section-head"><div><h2>C조 팀명</h2><div class="hint">코코딩 수정: 4개 팀</div></div></div><div id="teams-C" class="team-list"></div></article>
+          <article class="panel"><div class="section-head"><div><h2>C조 팀명</h2><div class="hint">2부리그 · 5개 팀</div></div></div><div id="teams-C" class="team-list"></div></article>
         </div>
         <article class="panel"><h2>순위 결정 기준</h2><p class="hint">정렬: 승점 → 경고 누적 횟수 적은 팀 → 골득실차 → 다득점 → 승자승 → 제비뽑기. 제비뽑기는 앱이 자동 결정하지 않고, 위 기준까지 같으면 공동 순위로 표시해 현장에서 결정할 수 있게 둡니다. A/B조는 1부리그로 통합 비교하고, C조는 2부리그로 별도 계산합니다.</p></article>
         <article class="panel">
           <div class="section-head"><div><h2>관리 도구</h2><div class="hint">첫 화면을 가볍게 유지하기 위해 백업/복구/인쇄 기능은 설정 화면으로 분리했습니다.</div></div></div>
+          <div class="team-list" style="margin-bottom:12px">
+            <label class="team-input" style="grid-template-columns:86px 1fr"><code>온라인</code><input id="githubToken" type="password" placeholder="GitHub 저장 토큰: 이 기기에만 저장됨" autocomplete="off"></label>
+            <p class="hint">온라인 저장은 GitHub 파일 <code>data/scoreboard.json</code>을 메모장처럼 사용합니다. 토큰은 앱 코드나 GitHub에 올리지 않고 현재 브라우저에만 저장됩니다.</p>
+          </div>
           <div class="toolbar">
-            <button class="btn primary" id="saveBtn">저장</button><button class="btn" id="exportBtn">JSON 백업</button><button class="btn" id="csvBtn">CSV 복사</button><button class="btn warn" id="printBtn">인쇄/PDF</button><button class="btn danger" id="resetBtn">초기화</button><input id="importFile" type="file" accept="application/json" hidden><button class="btn" id="importBtn">JSON 복구</button>
+            <button class="btn primary" id="saveBtn">저장</button><button class="btn primary" id="onlineSaveBtn">온라인 저장</button><button class="btn" id="onlineLoadBtn">온라인 불러오기</button><button class="btn" id="tokenSaveBtn">토큰 저장</button><button class="btn" id="exportBtn">JSON 백업</button><button class="btn" id="csvBtn">CSV 복사</button><button class="btn warn" id="printBtn">인쇄/PDF</button><button class="btn danger" id="resetBtn">초기화</button><input id="importFile" type="file" accept="application/json" hidden><button class="btn" id="importBtn">JSON 복구</button>
           </div>
         </article>
       </section>
     </main>
-    <p class="footer-note">운영 권장: 각 조 담당자는 자기 조 입력 탭만 사용하고, 본부 화면은 메인 대시보드/팀별 점수판을 띄우세요. 여러 기기 동시 동기화는 서버 저장소가 필요합니다.</p>
+    <p class="footer-note">운영 권장: 한 기기에서 입력하면 가장 안전합니다. 여러 기기에서 같은 기록을 이어 보려면 팀명/규칙의 온라인 저장/불러오기를 사용하세요.</p>
   </div>
   <div id="toast" class="toast"></div>
 <script>
-const STORAGE_KEY='prok-football-scoreboard-v2';
+const STORAGE_KEY='prok-football-scoreboard-v3';
+const LEGACY_STORAGE_KEYS=['prok-football-scoreboard-v2','knp-football-scoreboard-v2','knp-football-scoreboard-v1'];
+const TOKEN_KEY='prok-football-github-token';
+const ONLINE_FILE={owner:'hongsfive',repo:'knp-football-scoreboard',path:'data/scoreboard.json',branch:'main'};
 const groups=['A','B','C'];
 const divisionOneGroups=['A','B'];
 const groupLabel={A:'A조 · 1구장',B:'B조 · 4구장',C:'C조 · 보조축구장'};
@@ -110,9 +117,9 @@ const fixtureDefs={
 const finals=[{time:'12일 12:30',group:'A',label:'준결승',homeLabel:'A조 1위',awayLabel:'B조 2위'},{time:'12일 12:30',group:'B',label:'준결승',homeLabel:'B조 1위',awayLabel:'A조 2위'},{time:'12일 12:30',group:'C',label:'C조 결승',homeLabel:'C조 1위',awayLabel:'C조 2위'},{time:'12일 13:30',group:'F',label:'결승전',homeLabel:'준결승 승자',awayLabel:'준결승 승자'}];
 function defaultState(){return{teams:structuredClone(defaultTeams),matches:{A:[],B:[],C:[]},updatedAt:new Date().toISOString()}}
 function makeFixtures(group){return fixtureDefs[group].map((f,i)=>({id:`${group}-${i+1}`,time:f[0],home:f[1],away:f[2],homeScore:'',awayScore:'',homeYellow:0,awayYellow:0,homeRed:0,awayRed:0}))}
-function loadState(){try{const old=localStorage.getItem(STORAGE_KEY)||localStorage.getItem('knp-football-scoreboard-v2')||localStorage.getItem('knp-football-scoreboard-v1');if(!old){const s=defaultState();ensureFixtures(s);return s}const parsed=JSON.parse(old);const s=defaultState();s.teams={...s.teams,...(parsed.teams||{})};s.teams.C=structuredClone(defaultTeams.C);s.matches={...s.matches,...(parsed.matches||{})};s.updatedAt=parsed.updatedAt||s.updatedAt;ensureFixtures(s);return s}catch{const s=defaultState();ensureFixtures(s);return s}}
+function loadState(){try{const old=[STORAGE_KEY,...LEGACY_STORAGE_KEYS].map(k=>localStorage.getItem(k)).find(Boolean);if(!old){const s=defaultState();ensureFixtures(s);return s}const parsed=JSON.parse(old);const s=defaultState();s.teams={...s.teams,...(parsed.teams||{})};s.teams.C=structuredClone(defaultTeams.C);s.matches={...s.matches,...(parsed.matches||{})};s.updatedAt=parsed.updatedAt||s.updatedAt;ensureFixtures(s);return s}catch{const s=defaultState();ensureFixtures(s);return s}}
 let state=loadState();
-function ensureFixtures(target=state){for(const g of groups){const fresh=makeFixtures(g);const old=new Map((target.matches[g]||[]).map(m=>[m.id,m]));target.matches[g]=fresh.map(m=>({...m,...(old.get(m.id)||{})}))}}
+function ensureFixtures(target=state){for(const g of groups){const fresh=makeFixtures(g);const old=new Map((target.matches[g]||[]).map(m=>[m.id,m]));target.matches[g]=fresh.map(m=>{const o=old.get(m.id)||{};return{...m,homeScore:o.homeScore??m.homeScore,awayScore:o.awayScore??m.awayScore,homeYellow:o.homeYellow??m.homeYellow,awayYellow:o.awayYellow??m.awayYellow,homeRed:o.homeRed??m.homeRed,awayRed:o.awayRed??m.awayRed}})}}
 function saveState(show=true){state.updatedAt=new Date().toISOString();localStorage.setItem(STORAGE_KEY,JSON.stringify(state));if(show)toast('저장했습니다')}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',1700)}
 function num(v){const n=Number(v);return Number.isFinite(n)?n:0} function isDone(m){return m.homeScore!==''&&m.awayScore!==''&&!Number.isNaN(Number(m.homeScore))&&!Number.isNaN(Number(m.awayScore))}
@@ -135,10 +142,17 @@ function updateMatch(id,field,value){for(const g of groups){const m=state.matche
 function escapeHtml(str){return String(str??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}function escapeAttr(str){return escapeHtml(str).replace(/'/g,'&#39;')}
 function exportJson(){saveState(false);const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`prok-football-scoreboard-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href)}
 async function copyCsv(){const ranked=rankRows(allRows());const header=['순위','조','팀','경기','승','무','패','득','실','득실','승점','경고','퇴장','승자승'];const body=ranked.map(r=>[r.rank,r.group,r.name,r.played,r.win,r.draw,r.loss,r.gf,r.ga,r.gd,r.points,r.yellow,r.red,r.h2hPoints]);await navigator.clipboard.writeText([header,...body].map(row=>row.join('\t')).join('\n'));toast('1부 통합 순위를 복사했습니다')}
+function token(){return localStorage.getItem(TOKEN_KEY)||document.getElementById('githubToken')?.value.trim()||''}
+function rememberToken(){const t=document.getElementById('githubToken').value.trim();if(!t)return alert('토큰을 입력하세요.');localStorage.setItem(TOKEN_KEY,t);toast('이 브라우저에 토큰을 저장했습니다')}
+function b64(str){const bytes=new TextEncoder().encode(str);let bin='';bytes.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
+function unb64(str){const bin=atob(str.replace(/\n/g,''));return new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)))}
+async function onlineFetch(method='GET',body=null,auth=false){const headers={'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};const t=token();if(auth&&t)headers.Authorization=`Bearer ${t}`;if(body){headers['Content-Type']='application/json'}const url=`https://api.github.com/repos/${ONLINE_FILE.owner}/${ONLINE_FILE.repo}/contents/${ONLINE_FILE.path}?ref=${ONLINE_FILE.branch}`;return fetch(url,{method,headers,body:body?JSON.stringify(body):null})}
+async function loadOnline(){try{const res=await onlineFetch('GET',null,Boolean(token()));if(!res.ok)throw new Error(`GitHub ${res.status}`);const data=await res.json();state=JSON.parse(unb64(data.content));ensureFixtures();saveState(false);render();toast('온라인 기록을 불러왔습니다')}catch(e){alert(`온라인 불러오기 실패: ${e.message}`)}}
+async function saveOnline(){try{const t=token();if(!t)return alert('온라인 저장용 GitHub 토큰을 먼저 입력/저장하세요.');saveState(false);let sha=null;const get=await onlineFetch('GET',null,true);if(get.ok){sha=(await get.json()).sha}else if(get.status!==404){throw new Error(`현재 파일 확인 실패 ${get.status}`)}const body={message:`Update scoreboard ${new Date().toISOString()}`,content:b64(JSON.stringify(state,null,2)),branch:ONLINE_FILE.branch};if(sha)body.sha=sha;const putUrl=`https://api.github.com/repos/${ONLINE_FILE.owner}/${ONLINE_FILE.repo}/contents/${ONLINE_FILE.path}`;const res=await fetch(putUrl,{method:'PUT',headers:{'Accept':'application/vnd.github+json','Content-Type':'application/json','Authorization':`Bearer ${t}`,'X-GitHub-Api-Version':'2022-11-28'},body:JSON.stringify(body)});if(!res.ok)throw new Error(`GitHub ${res.status}`);toast('온라인에 저장했습니다')}catch(e){alert(`온라인 저장 실패: ${e.message}`)}}
 document.addEventListener('input',e=>{const tn=e.target.dataset.teamName,mf=e.target.dataset.field,mid=e.target.dataset.match,note=e.target.dataset.teamNote;if(tn){const t=teamObj(tn);if(t)t.name=e.target.value}if(mid&&mf)updateMatch(mid,mf,e.target.value);if(note){const t=teamObj(note);if(t)t.note=e.target.value}saveState(false)});
 document.addEventListener('change',e=>{if(e.target.dataset.teamName||e.target.dataset.field||e.target.dataset.teamNote)render()});
 document.addEventListener('click',e=>{const view=e.target.dataset.view,inputGroup=e.target.dataset.inputGroup;if(view){document.querySelectorAll('.tab,.view').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');document.getElementById(view).classList.add('active');render()}if(inputGroup){document.querySelectorAll('.input-tab,.input-view').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');document.getElementById(`input-${inputGroup}`).classList.add('active')}});
-document.getElementById('saveBtn').onclick=()=>{saveState(true);render()};document.getElementById('exportBtn').onclick=exportJson;document.getElementById('csvBtn').onclick=copyCsv;document.getElementById('printBtn').onclick=()=>window.print();document.getElementById('resetBtn').onclick=()=>{if(confirm('모든 팀명/경기 결과를 초기화할까요?')){localStorage.removeItem(STORAGE_KEY);state=loadState();render();toast('초기화했습니다')}};document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();document.getElementById('importFile').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{state=JSON.parse(await file.text());ensureFixtures();saveState(false);render();toast('복구했습니다')}catch{alert('JSON 파일을 읽지 못했습니다.')}};
+document.getElementById('githubToken').value=localStorage.getItem(TOKEN_KEY)||'';document.getElementById('saveBtn').onclick=()=>{saveState(true);render()};document.getElementById('onlineSaveBtn').onclick=saveOnline;document.getElementById('onlineLoadBtn').onclick=loadOnline;document.getElementById('tokenSaveBtn').onclick=rememberToken;document.getElementById('exportBtn').onclick=exportJson;document.getElementById('csvBtn').onclick=copyCsv;document.getElementById('printBtn').onclick=()=>window.print();document.getElementById('resetBtn').onclick=()=>{if(confirm('모든 팀명/경기 결과를 초기화할까요?')){[STORAGE_KEY,...LEGACY_STORAGE_KEYS].forEach(k=>localStorage.removeItem(k));state=loadState();render();toast('초기화했습니다')}};document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();document.getElementById('importFile').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{state=JSON.parse(await file.text());ensureFixtures();saveState(false);render();toast('복구했습니다')}catch{alert('JSON 파일을 읽지 못했습니다.')}};
 render();
 </script>
 </body>
