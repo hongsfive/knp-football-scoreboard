@@ -450,5 +450,64 @@
       }
     ]
   },
-  "updatedAt": "2026-05-12T02:33:44.877Z"
+  "updatedAt": "2026-05-12T04:03:38.090Z",
+  "knockouts": {
+    "semifinals": [
+      {
+        "id": "SF-1",
+        "time": "12일 12:30",
+        "label": "준결승 1경기",
+        "homeSlot": {
+          "group": "A",
+          "rank": 1
+        },
+        "awaySlot": {
+          "group": "B",
+          "rank": 2
+        },
+        "homeScore": "6",
+        "awayScore": "0",
+        "homeYellow": 0,
+        "awayYellow": 0,
+        "homeRed": 0,
+        "awayRed": 0,
+        "homeLabel": "A조 1위 충북",
+        "awayLabel": "B조 2위 익산"
+      },
+      {
+        "id": "SF-2",
+        "time": "12일 12:30",
+        "label": "준결승 2경기",
+        "homeSlot": {
+          "group": "B",
+          "rank": 1
+        },
+        "awaySlot": {
+          "group": "A",
+          "rank": 2
+        },
+        "homeScore": "",
+        "awayScore": "",
+        "homeYellow": 0,
+        "awayYellow": 0,
+        "homeRed": 0,
+        "awayRed": 0,
+        "homeLabel": "B조 1위 전북동",
+        "awayLabel": "A조 2위 군산"
+      }
+    ],
+    "final": {
+      "id": "FINAL-1",
+      "time": "12일 13:30",
+      "label": "결승전",
+      "homeScore": "",
+      "awayScore": "",
+      "homeYellow": 0,
+      "awayYellow": 0,
+      "homeRed": 0,
+      "awayRed": 0,
+      "homeLabel": "A조 1위 충북",
+      "awayLabel": "준결승 2경기 승자"
+    }
+  }
 }
