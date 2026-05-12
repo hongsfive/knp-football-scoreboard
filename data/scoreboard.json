@@ -450,7 +450,7 @@
       }
     ]
   },
-  "updatedAt": "2026-05-12T04:57:39.020Z",
+  "updatedAt": "2026-05-12T05:59:43.273Z",
   "knockouts": {
     "semifinals": [
       {
@@ -500,8 +500,8 @@
       "id": "FINAL-1",
       "time": "12일 13:30",
       "label": "결승전",
-      "homeScore": "",
-      "awayScore": "",
+      "homeScore": "2",
+      "awayScore": "0",
       "homeYellow": 0,
       "awayYellow": 0,
       "homeRed": 0,
