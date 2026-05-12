@@ -450,7 +450,7 @@
       }
     ]
   },
-  "updatedAt": "2026-05-12T04:03:38.090Z",
+  "updatedAt": "2026-05-12T04:57:39.020Z",
   "knockouts": {
     "semifinals": [
       {
@@ -486,8 +486,8 @@
           "group": "A",
           "rank": 2
         },
-        "homeScore": "",
-        "awayScore": "",
+        "homeScore": "1",
+        "awayScore": "0",
         "homeYellow": 0,
         "awayYellow": 0,
         "homeRed": 0,
@@ -507,7 +507,7 @@
       "homeRed": 0,
       "awayRed": 0,
       "homeLabel": "A조 1위 충북",
-      "awayLabel": "준결승 2경기 승자"
+      "awayLabel": "B조 1위 전북동"
     }
   }
 }
