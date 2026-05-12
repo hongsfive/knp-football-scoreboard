@@ -406,7 +406,7 @@
         "home": "C3",
         "away": "C4",
         "homeScore": "1",
-        "awayScore": "3",
+        "awayScore": "4",
         "homeYellow": 0,
         "awayYellow": "1",
         "homeRed": 0,
@@ -450,5 +450,5 @@
       }
     ]
   },
-  "updatedAt": "2026-05-11T09:14:46.496Z"
+  "updatedAt": "2026-05-12T00:04:42.071Z"
 }
