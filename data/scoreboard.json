@@ -185,8 +185,8 @@
         "time": "12일 09:50",
         "home": "A2",
         "away": "A3",
-        "homeScore": "",
-        "awayScore": "",
+        "homeScore": "2",
+        "awayScore": "1",
         "homeYellow": 0,
         "awayYellow": 0,
         "homeRed": 0,
@@ -450,5 +450,5 @@
       }
     ]
   },
-  "updatedAt": "2026-05-12T01:41:25.326Z"
+  "updatedAt": "2026-05-12T01:48:46.104Z"
 }
