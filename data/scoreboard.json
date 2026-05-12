@@ -173,8 +173,8 @@
         "time": "12일 09:00",
         "home": "A4",
         "away": "A5",
-        "homeScore": "",
-        "awayScore": "",
+        "homeScore": "4",
+        "awayScore": "0",
         "homeYellow": 0,
         "awayYellow": 0,
         "homeRed": 0,
@@ -295,8 +295,8 @@
         "time": "12일 09:00",
         "home": "B4",
         "away": "B5",
-        "homeScore": "",
-        "awayScore": "",
+        "homeScore": "1",
+        "awayScore": "0",
         "homeYellow": 0,
         "awayYellow": 0,
         "homeRed": 0,
@@ -417,8 +417,8 @@
         "time": "12일 09:00",
         "home": "C4",
         "away": "C5",
-        "homeScore": "",
-        "awayScore": "",
+        "homeScore": "6",
+        "awayScore": "1",
         "homeYellow": 0,
         "awayYellow": 0,
         "homeRed": 0,
@@ -429,8 +429,8 @@
         "time": "12일 09:50",
         "home": "C2",
         "away": "C3",
-        "homeScore": "",
-        "awayScore": "",
+        "homeScore": "0",
+        "awayScore": "3",
         "homeYellow": 0,
         "awayYellow": 0,
         "homeRed": 0,
@@ -450,5 +450,5 @@
       }
     ]
   },
-  "updatedAt": "2026-05-12T00:04:42.071Z"
+  "updatedAt": "2026-05-12T01:11:16.568Z"
 }
